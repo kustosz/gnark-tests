@@ -2,10 +2,12 @@ module github.com/consensys/gnark-tests
 
 go 1.19
 
+replace github.com/consensys/gnark => ../recmo-gnark
+
 require (
 	github.com/consensys/gnark v0.7.2-0.20230620210714-0713c1dc4def
-	github.com/consensys/gnark-crypto v0.11.1-0.20230609175512-0ee617fa6d43
-	github.com/ethereum/go-ethereum v1.12.0
+	github.com/consensys/gnark-crypto v0.9.2
+	github.com/ethereum/go-ethereum v1.11.6
 	github.com/kilic/bls12-381 v0.1.0
 	github.com/leanovate/gopter v0.2.9
 	github.com/stretchr/testify v1.8.2
@@ -15,7 +17,6 @@ require (
 	github.com/DataDog/zstd v1.5.2 // indirect
 	github.com/VictoriaMetrics/fastcache v1.10.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
-	github.com/bits-and-blooms/bitset v1.7.0 // indirect
 	github.com/blang/semver/v4 v4.0.0 // indirect
 	github.com/btcsuite/btcd/btcec/v2 v2.3.2 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
@@ -27,6 +28,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/deckarep/golang-set/v2 v2.1.0 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.2.0 // indirect
+	github.com/edsrzf/mmap-go v1.0.0 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/fxamacker/cbor/v2 v2.4.0 // indirect
 	github.com/gballet/go-libpcsclite v0.0.0-20190607065134-2772fd86a8ff // indirect

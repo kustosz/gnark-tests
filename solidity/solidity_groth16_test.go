@@ -109,37 +109,32 @@ func (t *ExportSolidityTestSuiteGroth16) TestVerifyProof() {
 
 	// solidity contract inputs
 	var (
-		a     [2]*big.Int
-		b     [2][2]*big.Int
-		c     [2]*big.Int
-		input [1]*big.Int
+		proofEvm [8]*big.Int
+		input    [1]*big.Int
 	)
 
 	// proof.Ar, proof.Bs, proof.Krs
-	a[0] = new(big.Int).SetBytes(proofBytes[fpSize*0 : fpSize*1])
-	a[1] = new(big.Int).SetBytes(proofBytes[fpSize*1 : fpSize*2])
-	b[0][0] = new(big.Int).SetBytes(proofBytes[fpSize*2 : fpSize*3])
-	b[0][1] = new(big.Int).SetBytes(proofBytes[fpSize*3 : fpSize*4])
-	b[1][0] = new(big.Int).SetBytes(proofBytes[fpSize*4 : fpSize*5])
-	b[1][1] = new(big.Int).SetBytes(proofBytes[fpSize*5 : fpSize*6])
-	c[0] = new(big.Int).SetBytes(proofBytes[fpSize*6 : fpSize*7])
-	c[1] = new(big.Int).SetBytes(proofBytes[fpSize*7 : fpSize*8])
+	proofEvm[0] = new(big.Int).SetBytes(proofBytes[fpSize*0 : fpSize*1])
+	proofEvm[1] = new(big.Int).SetBytes(proofBytes[fpSize*1 : fpSize*2])
+	proofEvm[2] = new(big.Int).SetBytes(proofBytes[fpSize*2 : fpSize*3])
+	proofEvm[3] = new(big.Int).SetBytes(proofBytes[fpSize*3 : fpSize*4])
+	proofEvm[4] = new(big.Int).SetBytes(proofBytes[fpSize*4 : fpSize*5])
+	proofEvm[5] = new(big.Int).SetBytes(proofBytes[fpSize*5 : fpSize*6])
+	proofEvm[6] = new(big.Int).SetBytes(proofBytes[fpSize*6 : fpSize*7])
+	proofEvm[7] = new(big.Int).SetBytes(proofBytes[fpSize*7 : fpSize*8])
 
 	// public witness
 	input[0] = new(big.Int).SetUint64(35)
 
 	// call the contract
-	res, err := t.verifierContract.VerifyProof(&bind.CallOpts{}, a, b, c, input)
-	if t.NoError(err, "calling verifier on chain gave error") {
-		t.True(res, "calling verifier on chain didn't succeed")
-	}
+	err = t.verifierContract.VerifyProof(&bind.CallOpts{}, proofEvm, input)
+	t.NoError(err, "calling verifier on chain gave error")
 
 	// (wrong) public witness
 	input[0] = new(big.Int).SetUint64(42)
 
 	// call the contract should fail
-	res, err = t.verifierContract.VerifyProof(&bind.CallOpts{}, a, b, c, input)
-	if t.NoError(err, "calling verifier on chain gave error") {
-		t.False(res, "calling verifier on chain succeed, and shouldn't have")
-	}
+	err = t.verifierContract.VerifyProof(&bind.CallOpts{}, proofEvm, input)
+	t.Error(err, "calling verifier on chain succeeded, and shouldn't have")
+
 }

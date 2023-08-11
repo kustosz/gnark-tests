@@ -11,12 +11,12 @@ clean-abi-generated:
 	cd solidity && rm -fr ./abi/*
 
 solc: clean-abi-generated
-	cd solidity && solc --bin --abi -o ./abi contract_g16.sol
-	cd solidity && solc --bin --abi -o ./abi contract_plonk.sol
+	cd solidity && solc --evm-version paris --bin --abi -o ./abi contract_g16.sol
+	cd solidity && solc --evm-version paris --bin --abi -o ./abi contract_plonk.sol
 
 abigen: solc
 	cd solidity && abigen --bin ./abi/Verifier.bin --abi abi/Verifier.abi --pkg solidity --out solidity_groth16.go --type Verifier
-	cd solidity && abigen --bin ./abi/KeyedPlonkVerifier.bin --abi abi/KeyedPlonkVerifier.abi --pkg solidity --out solidity_plonk.go --type KeyedPlonkVerifier
+	cd solidity && abigen --bin ./abi/PlonkVerifier.bin --abi abi/PlonkVerifier.abi --pkg solidity --out solidity_plonk.go --type PlonkVerifier
 
 go-test:
 	cd solidity && go test
