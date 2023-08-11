@@ -2,6 +2,7 @@ package solidity
 
 import (
 	"bytes"
+	"github.com/consensys/gnark/examples/exponentiate"
 	"math/big"
 	"os"
 	"testing"
@@ -9,7 +10,6 @@ import (
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark/backend/groth16"
 	"github.com/consensys/gnark/constraint"
-	"github.com/consensys/gnark/examples/cubic"
 	"github.com/consensys/gnark/frontend"
 	"github.com/consensys/gnark/frontend/cs/r1cs"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -32,7 +32,7 @@ type ExportSolidityTestSuiteGroth16 struct {
 	// groth16 gnark objects
 	vk      groth16.VerifyingKey
 	pk      groth16.ProvingKey
-	circuit cubic.Circuit
+	circuit exponentiate.Circuit
 	r1cs    constraint.ConstraintSystem
 }
 
@@ -84,9 +84,10 @@ func (t *ExportSolidityTestSuiteGroth16) SetupTest() {
 func (t *ExportSolidityTestSuiteGroth16) TestVerifyProof() {
 
 	// create a valid proof
-	var assignment cubic.Circuit
+	var assignment exponentiate.Circuit
 	assignment.X = 3
-	assignment.Y = 35
+	assignment.Y = 81
+	assignment.E = 4
 
 	// witness creation
 	witness, err := frontend.NewWitness(&assignment, ecc.BN254.ScalarField())
@@ -110,7 +111,7 @@ func (t *ExportSolidityTestSuiteGroth16) TestVerifyProof() {
 	// solidity contract inputs
 	var (
 		proofEvm [8]*big.Int
-		input    [1]*big.Int
+		input    [2]*big.Int
 	)
 
 	// proof.Ar, proof.Bs, proof.Krs
@@ -124,7 +125,8 @@ func (t *ExportSolidityTestSuiteGroth16) TestVerifyProof() {
 	proofEvm[7] = new(big.Int).SetBytes(proofBytes[fpSize*7 : fpSize*8])
 
 	// public witness
-	input[0] = new(big.Int).SetUint64(35)
+	input[0] = new(big.Int).SetUint64(3)
+	input[1] = new(big.Int).SetUint64(81)
 
 	// call the contract
 	err = t.verifierContract.VerifyProof(&bind.CallOpts{}, proofEvm, input)

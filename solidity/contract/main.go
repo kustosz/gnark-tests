@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/consensys/gnark/examples/exponentiate"
 	"log"
 	"os"
 
@@ -27,7 +28,7 @@ func main() {
 }
 
 func generateGroth16() error {
-	var circuit cubic.Circuit
+	var circuit exponentiate.Circuit
 
 	r1cs, err := frontend.Compile(ecc.BN254.ScalarField(), r1cs.NewBuilder, &circuit)
 	if err != nil {
