@@ -2,7 +2,6 @@ package solidity
 
 import (
 	"bytes"
-	"fmt"
 	"github.com/consensys/gnark-crypto/ecc/bn254"
 	"github.com/consensys/gnark-crypto/ecc/bn254/fp"
 	"github.com/consensys/gnark/examples/exponentiate"
@@ -133,18 +132,9 @@ func (t *ExportSolidityTestSuiteGroth16) TestVerifyProof() {
 	g1.SetBytes(proofBytes[fpSize*0 : fpSize*2])
 	proofCompressedEvm[0] = compressG1ForContract(g1)
 	g2.SetBytes(proofBytes[fpSize*2 : fpSize*6])
-	proofCompressedEvm[1], proofCompressedEvm[2] = compressG2ForContract(g2)
+	proofCompressedEvm[2], proofCompressedEvm[1] = compressG2ForContract(g2)
 	g1.SetBytes(proofBytes[fpSize*6 : fpSize*8])
 	proofCompressedEvm[3] = compressG1ForContract(g1)
-	fmt.Println("PROOF COMP")
-	for _, v := range proofCompressedEvm {
-		shf := new(big.Int).Set(v)
-		fmt.Println(shf.Text(16))
-	}
-	fmt.Println("PROOF")
-	for _, v := range proofEvm {
-		fmt.Println(v.Text(16))
-	}
 
 	// public witness
 	input[0] = new(big.Int).SetUint64(3)
@@ -162,6 +152,9 @@ func (t *ExportSolidityTestSuiteGroth16) TestVerifyProof() {
 
 	// call the contract should fail
 	err = t.verifierContract.VerifyProof(&bind.CallOpts{}, proofEvm, input)
+	t.Error(err, "calling verifier on chain succeeded, and shouldn't have")
+
+	err = t.verifierContract.VerifyCompressedProof(&bind.CallOpts{}, proofCompressedEvm, input)
 	t.Error(err, "calling verifier on chain succeeded, and shouldn't have")
 
 }
@@ -208,7 +201,7 @@ func compressG2ForContract(g2 *bn254.G2Affine) (*big.Int, *big.Int) {
 	// Trial and error find the signs.
 	for bits := 0; bits < 4; bits++ {
 		dc := new(fp.Element).Set(d)
-		if bits&1 != 0 {
+		if bits&2 != 0 {
 			dc.Neg(dc)
 		}
 		b0 := new(fp.Element)
@@ -219,7 +212,7 @@ func compressG2ForContract(g2 *bn254.G2Affine) (*big.Int, *big.Int) {
 		b1.Mul(b0, new(fp.Element).SetUint64(2))
 		b1.Inverse(b1)
 		b1.Mul(b1, a1)
-		if bits&2 != 0 {
+		if bits&1 != 0 {
 			b0.Neg(b0)
 			b1.Neg(b1)
 		}
